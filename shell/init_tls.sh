@@ -97,14 +97,14 @@ installTools(){
 }
 # 恢复配置
 resetNginxConfig(){
-    `cp -Rrf /tmp/mack-a/nginx/nginx.conf /etc/nginx/nginx.conf`
+    `cp -Rrf /tmp/enistein/nginx/nginx.conf /etc/nginx/nginx.conf`
     rm -rf /etc/nginx/conf.d/5NX2O9XQKP.conf
     echoColor green "\n恢复配置完毕"
 }
 # 备份
 bakConfig(){
-    mkdir -p /tmp/mack-a/nginx
-    `cp -Rrf /etc/nginx/nginx.conf /tmp/mack-a/nginx/nginx.conf`
+    mkdir -p /tmp/enistein/nginx
+    `cp -Rrf /etc/nginx/nginx.conf /tmp/enistein/nginx/nginx.conf`
 }
 # 安装证书
 installTLS(){
@@ -148,21 +148,21 @@ installTLS(){
         exit 0;
     fi
     sudo ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256 >/dev/null
-    ~/.acme.sh/acme.sh --installcert -d ${domain} --fullchainpath /tmp/mack-a/nginx/${domain}.crt --keypath /tmp/mack-a/nginx/${domain}.key --ecc >/dev/null
-    if [[ -z `cat /tmp/mack-a/nginx/${domain}.key` ]]
+    ~/.acme.sh/acme.sh --installcert -d ${domain} --fullchainpath /tmp/enistein/nginx/${domain}.crt --keypath /tmp/enistein/nginx/${domain}.key --ecc >/dev/null
+    if [[ -z `cat /tmp/enistein/nginx/${domain}.key` ]]
     then
         echoColor red "证书key生成失败，请重新运行"
         resetNginxConfig
         exit
-    elif [[ -z `cat /tmp/mack-a/nginx/${domain}.crt` ]]
+    elif [[ -z `cat /tmp/enistein/nginx/${domain}.crt` ]]
     then
         echoColor red "证书crt生成失败，请重新运行"
         resetNginxConfig
         exit
     fi
     echoColor green "证书生成成功"
-    echoColor green "证书目录/tmp/mack-a/nginx"
-    ls /tmp/mack-a/nginx
+    echoColor green "证书目录/tmp/enistein/nginx"
+    ls /tmp/enistein/nginx
 
     resetNginxConfig
     if [[ ${nginxStatus} = 2  ]]
