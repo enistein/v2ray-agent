@@ -461,9 +461,9 @@ allowPort() {
     # If the firewall is enabled, add the corresponding open port
     if systemctl status netfilter-persistent 2>/dev/null | grep -q "active (exited)"; then
         local updateFirewalldStatus=
-        if ! iptables -L | grep -q "$1/${type}(mack-a)"; then
+        if ! iptables -L | grep -q "$1/${type}(enistein)"; then
             updateFirewalldStatus=true
-            iptables -I INPUT -p ${type} --dport "$1" -m comment --comment "allow $1/${type}(mack-a)" -j ACCEPT
+            iptables -I INPUT -p ${type} --dport "$1" -m comment --comment "allow $1/${type}(enistein)" -j ACCEPT
         fi
 
         if echo "${updateFirewalldStatus}" | grep -q "true"; then
@@ -2764,9 +2764,9 @@ hysteriaPortHopping() {
             # echoContent red " ---> Wrong selection"
             # hysteriaPortHopping
             #else
-            iptables -t nat -A PREROUTING -p udp --dport "${portStart}:${portEnd}" -m comment --comment "mack-a_portHopping" -j DNAT --to-destination :${hysteriaPort}
+            iptables -t nat -A PREROUTING -p udp --dport "${portStart}:${portEnd}" -m comment --comment "enistein_portHopping" -j DNAT --to-destination :${hysteriaPort}
 
-            if iptables-save | grep -q "mack-a_portHopping"; then
+            if iptables-save | grep -q "enistein_portHopping"; then
                 allowPort "${portStart}:${portEnd}" udp
                 echoContent green " ---> Port hopping added successfully"
             else
@@ -2782,9 +2782,9 @@ hysteriaPortHopping() {
 readHysteriaPortHopping() {
     if [[ -n "${hysteriaPort}" ]]; then
         #        interfaceName=$(ip -4 addr show | awk '/inet /{print $NF ":" $2}' | awk '{print ""NR""":"$0}' | grep "${selectInterface}:" | awk -F "[:]" '{print $2}')
-        if iptables-save | grep -q "mack-a_portHopping"; then
+        if iptables-save | grep -q "enistein_portHopping"; then
             portHopping=
-            portHopping=$(iptables-save | grep "mack-a_portHopping" | cut -d " " -f 8)
+            portHopping=$(iptables-save | grep "enistein_portHopping" | cut -d " " -f 8)
             portHoppingStart=$(echo "${portHopping}" | cut -d ":" -f 1)
             portHoppingEnd=$(echo "${portHopping}" | cut -d ":" -f 2)
         fi
@@ -2793,7 +2793,7 @@ readHysteriaPortHopping() {
 
 # Delete hysteria port treaty iptables rules
 deleteHysteriaPortHoppingRules() {
-    iptables -t nat -L PREROUTING --line-numbers | grep "mack-a_portHopping" | awk '{print $1}' | while read -r line; do
+    iptables -t nat -L PREROUTING --line-numbers | grep "enistein_portHopping" | awk '{print $1}' | while read -r line; do
         iptables -t nat -D PREROUTING 1
     done
 }
@@ -5337,7 +5337,7 @@ EOF
 # Script shortcut
 aliasInstall() {
 
-    if [[ -f "$HOME/install.sh" ]] && [[ -d "/etc/v2ray-agent" ]] && grep <"$HOME/install.sh" -q "作者:mack-a"; then
+    if [[ -f "$HOME/install.sh" ]] && [[ -d "/etc/v2ray-agent" ]] && grep <"$HOME/install.sh" -q "作者:enistein"; then
         mv "$HOME/install.sh" /etc/v2ray-agent/install.sh
         local vasmaType=
         if [[ -d "/usr/bin/" ]]; then
@@ -7895,7 +7895,7 @@ tuicVersionManageMenu() {
 menu() {
     cd "$HOME" || exit
     echoContent red "\n================================================ ================="
-    echoContent green "Author: mack-a"
+    echoContent green "Author: enistein"
     echoContent green "Current version: v2.10.20"
     echoContent green "Github: https://github.com/enistein/v2ray-agent"
     echoContent green "Description: 8-in-1 coexistence script\c"
