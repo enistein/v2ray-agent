@@ -728,9 +728,9 @@ allowPort() {
         fi
     elif dpkg -l | grep -q "^[[:space:]]*ii[[:space:]]\+netfilter-persistent" && systemctl status netfilter-persistent 2>/dev/null | grep -q "active (exited)"; then
         local updateFirewalldStatus=
-        if ! iptables -L | grep -q "$1/${type}(mack-a)"; then
+        if ! iptables -L | grep -q "$1/${type}(enistein)"; then
             updateFirewalldStatus=true
-            iptables -I INPUT -p ${type} --dport "$1" -m comment --comment "allow $1/${type}(mack-a)" -j ACCEPT
+            iptables -I INPUT -p ${type} --dport "$1" -m comment --comment "allow $1/${type}(enistein)" -j ACCEPT
         fi
 
         if echo "${updateFirewalldStatus}" | grep -q "true"; then
@@ -3043,9 +3043,9 @@ addPortHopping() {
                     exit 0
                 fi
             else
-                iptables -t nat -A PREROUTING -p udp --dport "${portStart}:${portEnd}" -m comment --comment "mack-a_${type}_portHopping" -j DNAT --to-destination ":${targetPort}"
+                iptables -t nat -A PREROUTING -p udp --dport "${portStart}:${portEnd}" -m comment --comment "enistein_${type}_portHopping" -j DNAT --to-destination ":${targetPort}"
                 sudo netfilter-persistent save
-                if ! iptables-save | grep -q "mack-a_${type}_portHopping"; then
+                if ! iptables-save | grep -q "enistein_${type}_portHopping"; then
                     echoContent red " ---> 端口跳跃添加失败"
                     exit 0
                 fi
@@ -3067,9 +3067,9 @@ readPortHopping() {
         portHoppingStart=$(sudo firewall-cmd --list-forward-ports | grep "toport=${targetPort}" | head -1 | cut -d ":" -f 1 | cut -d "=" -f 2)
         portHoppingEnd=$(sudo firewall-cmd --list-forward-ports | grep "toport=${targetPort}" | tail -n 1 | cut -d ":" -f 1 | cut -d "=" -f 2)
     else
-        if iptables-save | grep -q "mack-a_${type}_portHopping"; then
+        if iptables-save | grep -q "enistein_${type}_portHopping"; then
             local portHopping=
-            portHopping=$(iptables-save | grep "mack-a_${type}_portHopping" | cut -d " " -f 8)
+            portHopping=$(iptables-save | grep "enistein_${type}_portHopping" | cut -d " " -f 8)
 
             portHoppingStart=$(echo "${portHopping}" | cut -d ":" -f 1)
             portHoppingEnd=$(echo "${portHopping}" | cut -d ":" -f 2)
@@ -3098,7 +3098,7 @@ deletePortHoppingRules() {
         done
         sudo firewall-cmd --reload
     else
-        iptables -t nat -L PREROUTING --line-numbers | grep "mack-a_${type}_portHopping" | awk '{print $1}' | while read -r line; do
+        iptables -t nat -L PREROUTING --line-numbers | grep "enistein_${type}_portHopping" | awk '{print $1}' | while read -r line; do
             iptables -t nat -D PREROUTING 1
             sudo netfilter-persistent save
         done
@@ -6337,7 +6337,7 @@ EOF
 # 脚本快捷方式
 aliasInstall() {
 
-    if [[ -f "$HOME/install.sh" ]] && [[ -d "/etc/v2ray-agent" ]] && grep <"$HOME/install.sh" -q "作者:mack-a"; then
+    if [[ -f "$HOME/install.sh" ]] && [[ -d "/etc/v2ray-agent" ]] && grep <"$HOME/install.sh" -q "作者:enistein"; then
         mv "$HOME/install.sh" /etc/v2ray-agent/install.sh
         local vasmaType=
         if [[ -d "/usr/bin/" ]]; then
@@ -9511,7 +9511,7 @@ singBoxVersionManageMenu() {
 menu() {
     cd "$HOME" || exit
     echoContent red "\n=============================================================="
-    echoContent green "作者：mack-a"
+    echoContent green "作者：enistein"
     echoContent green "当前版本：v3.4.35"
     echoContent green "Github：https://github.com/enistein/v2ray-agent"
     echoContent green "描述：八合一共存脚本\c"
